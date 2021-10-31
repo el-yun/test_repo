@@ -1,7 +1,7 @@
 import React from 'react'
 import { Market } from '~/interfaces/market'
 import { useMarketSelector } from '~/store/useMarketStore'
-import { renameMarket } from '~/Util/util'
+import { renameMarket } from '~/util/util'
 
 interface Props {
   marketInfo: Market

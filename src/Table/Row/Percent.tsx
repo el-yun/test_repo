@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { ChangeType, Market } from '~/interfaces/market'
-import { getSign } from '~/Util/util'
+import { getSign } from '~/util/util'
 
 interface Props {
   change_rate: number

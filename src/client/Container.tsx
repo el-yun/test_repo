@@ -1,7 +1,7 @@
 import React from 'react'
 import Tabs from './Tabs'
-import Header from '../Table/Header'
-import Body from '../Table/Body'
+import Header from '../table/Header'
+import Body from '../table/Body'
 
 const Container = () => {
   return (

@@ -38,8 +38,8 @@ const config = {
     modules: ['node_modules'],
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: {
-			'~': path.resolve(__dirname, './src')
-		}
+      '~': path.resolve(__dirname, './src'),
+    },
   },
   module: {
     rules: [
@@ -68,9 +68,7 @@ const config = {
       },
       {
         test: /\.css$/,
-        exclude: [
-          /node_modules\/(?!(react-date-range).*)/,
-        ],
+        exclude: [/node_modules\/(?!(react-date-range).*)/],
         use: [styleLoader, 'css-loader'],
       },
       {

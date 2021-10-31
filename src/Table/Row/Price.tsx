@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import { CurrenyType, Market } from '~/interfaces/market'
 import { useMarketSelector } from '~/store/useMarketStore'
-import { numberWithCommas } from '~/Util/util'
+import { numberWithCommas } from '~/util/util'
 
 interface Props {
   trade_price: number

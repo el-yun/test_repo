@@ -7,7 +7,7 @@ import TradeCost from './TradeCost'
 import Percent from './Percent'
 import Price from './Price'
 import BarChart from './BarChart'
-import { getUpDown } from '~/Util/util'
+import { getUpDown } from '~/util/util'
 
 interface Props {
   marketInfo: Market

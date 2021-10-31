@@ -3,7 +3,7 @@ import CSS from 'csstype'
 import { useMarkets, useTicker } from '~/api/query'
 import { CurrentSortType, CurrentSortUpDown, CurrenyType, Market, Ticker } from '~/interfaces/market'
 import { useMarketSelector } from '~/store/useMarketStore'
-import Row from './Row/Row'
+import Row from './row/Row'
 
 const lineStyle: CSS.Properties = {
   top: '10px',
