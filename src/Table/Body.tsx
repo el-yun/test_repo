@@ -1,51 +1,145 @@
-import React from 'react'
-import CSS from 'csstype';
+import React, { useCallback, useEffect, useState } from 'react'
+import CSS from 'csstype'
+import { useMarkets, useTicker } from '~/api/query'
+import { CurrentSortType, CurrentSortUpDown, CurrenyType, Market, Ticker } from '~/interfaces/market'
+import { useMarketSelector } from '~/store/useMarketStore'
+import Row from './Row/Row'
 
 const lineStyle: CSS.Properties = {
-    top: '10px',
-    height:'40%'
-};
+  top: '10px',
+  height: '40%',
+}
 
 const boxStyle: CSS.Properties = {
-    top: '12px',
-    height:'4px'
-};
+  top: '12px',
+  height: '4px',
+}
 const barUpLineStyle: CSS.Properties = {
-    top: '0px',
-    height:'50%'
-};
+  top: '0px',
+  height: '50%',
+}
 const barUpBoxStyle: CSS.Properties = {
-    top: '0px',
-    height:'12.5px'
-};
+  top: '0px',
+  height: '12.5px',
+}
 
+const upLineStyle: CSS.Properties = {
+  top: '10px',
+  height: '20%',
+}
+const upBoxStyle: CSS.Properties = {
+  top: '12px',
+  height: '1px',
+}
 
- const upLineStyle: CSS.Properties = {
-     top: '10px',
-     height:'20%'
- };
- const upBoxStyle: CSS.Properties = {
-     top: '12px',
-     height:'1px'
- };
-const Body = () => {
+interface Props {}
+
+const Body = (props: Props) => {
+  const [searchKey, setSearchKey] = useState('')
+  const { currency, currentSortType, currentSortUpDown } = useMarketSelector((state) => state.marketStore)
+  const { isLoading, error: fetchError, data: marketData } = useMarkets()
+
+  const {
+    isLoading: isTickerLoading,
+    error: fetchTickerError,
+    data: tickerData,
+    refetch: fireFetchTicker,
+  } = useTicker(searchKey)
+
+  useEffect(() => {
+    if (currency && marketData && marketData.length > 0) selectFilterCurrency(marketData)
+  }, [currency, marketData])
+
+  useEffect(() => {
+    if (searchKey.length > 0) fireFetchTicker()
+  }, [searchKey])
+
+  useEffect(() => {
+    if (tickerData) doRendering()
+  }, [currentSortType])
+
+  useEffect(() => {
+    if (tickerData) doRendering()
+  }, [currentSortUpDown])
+
+  /**
+   * @description 코인 종목 탭 클릭시 해당하는 종목으로 목록 filter
+   * @param {Market[]} market
+   */
+  const selectFilterCurrency = (market: Market[]) => {
+    //market: "KRW-BTC" 구분자로 나눈 후 첫번째 인자를 가지고 구분
+    const filterCurrency = market.filter((item) => {
+      const split = item.market.split('-')
+      return split[0] === currency
+    })
+
+    console.log('filterCurrency:', filterCurrency)
+    // console.log('ticker :', tickerData)
+
+    const str = filterCurrency.map((item) => item.market).join(', ')
+    console.log('set Search key :', str)
+    setSearchKey(str)
+    // setList(filterCurrency)
+  }
+
+  const sortTicker = useCallback(
+    (ticker: Ticker[], sortType: CurrentSortType, upDown: CurrentSortUpDown) => {
+      const propertyName = getPropertyName(sortType)
+      console.log('propertyName :', propertyName)
+      return ticker.sort((a: Ticker, b: Ticker) => {
+        return upDown === 'up' ? a[propertyName] - b[propertyName] : b[propertyName] - a[propertyName]
+      })
+    },
+    [tickerData]
+  )
+
+  const getPropertyName = (sortType: CurrentSortType) => {
+    //현재가, 전일대비, 거래대금
+    //trade_price / change_rate / acc_trade_price_24h
+    switch (sortType) {
+      case 'price':
+        return 'trade_price'
+      case 'percent':
+        return 'change_rate'
+      case 'tradecost':
+        return 'acc_trade_price_24h'
+      default:
+        return 'trade_price'
+    }
+  }
+
+  const doRendering = useCallback(() => {
+    if (tickerData && tickerData.length > 0) {
+      const sortTickerList = sortTicker(tickerData, currentSortType, currentSortUpDown)
+
+      return sortTickerList.map((tickerItem, idx) => {
+        const findMarketInfo = marketData.find((marketItem) => marketItem.market === tickerItem.market)
+        return <Row key={idx} marketInfo={findMarketInfo} ticker={tickerItem}></Row>
+      })
+    }
+  }, [currency, currentSortType, currentSortUpDown, tickerData])
+
   return (
     <div className="scrollB">
-        <table className="ty01">
-          <colgroup>
-            <col width="29" />
-            <col width="*" />
-            <col width="23%" />
-            <col width="19%" />
-            <col width="26%" />
-          </colgroup>
-          <tbody>
-          <tr>
+      <table className="ty01">
+        <colgroup>
+          <col width="29" />
+          <col width="*" />
+          <col width="23%" />
+          <col width="19%" />
+          <col width="26%" />
+        </colgroup>
+        <tbody>
+          {doRendering()}
+          {/* <tr>
             <td className="bar">
-              {/* <!-- up down --> */}
               <div className="bar up">
-                <span className="line" style={lineStyle}>-</span>
-                <span className="box" style={boxStyle}>-</span>
+                <span className="line" style={lineStyle}>
+                  -
+                </span>
+                <span className="box" style={boxStyle}>
+                  -
+                </span>
               </div>
             </td>
             <td className="tit">
@@ -59,14 +153,21 @@ const Body = () => {
               <p>0.00%</p>
             </td>
             <td className="tradecost">
-              <p>32,898<i>백만</i></p>
+              <p>
+                32,898<i>백만</i>
+              </p>
             </td>
           </tr>
+          
           <tr className="up">
             <td className="bar">
               <div className="bar up">
-                <span className="line" style={barUpLineStyle}>-</span>
-                <span className="box" style={barUpBoxStyle}>-</span>
+                <span className="line" style={barUpLineStyle}>
+                  -
+                </span>
+                <span className="box" style={barUpBoxStyle}>
+                  -
+                </span>
               </div>
             </td>
             <td className="tit">
@@ -86,8 +187,12 @@ const Body = () => {
           <tr className="up">
             <td className="bar">
               <div className="down">
-                <span className="line" style={lineStyle}>-</span>
-                <span className="box" style={boxStyle}>-</span>
+                <span className="line" style={lineStyle}>
+                  -
+                </span>
+                <span className="box" style={boxStyle}>
+                  -
+                </span>
               </div>
             </td>
             <td className="tit">
@@ -107,8 +212,12 @@ const Body = () => {
           <tr className="up">
             <td className="bar">
               <div className="up">
-                <span className="line" style={lineStyle}>-</span>
-                <span className="box" style={boxStyle}>-</span>
+                <span className="line" style={lineStyle}>
+                  -
+                </span>
+                <span className="box" style={boxStyle}>
+                  -
+                </span>
               </div>
             </td>
             <td className="tit">
@@ -127,10 +236,13 @@ const Body = () => {
           </tr>
           <tr className="up">
             <td className="bar">
-              
               <div className="bar up">
-                <span className="line" style={lineStyle}>-</span>
-                <span className="box" style={boxStyle}>-</span>
+                <span className="line" style={lineStyle}>
+                  -
+                </span>
+                <span className="box" style={boxStyle}>
+                  -
+                </span>
               </div>
             </td>
             <td className="tit">
@@ -150,8 +262,12 @@ const Body = () => {
           <tr className="up">
             <td className="bar">
               <div className="">
-                <span className="line" style={upLineStyle}>-</span>
-                <span className="box" style={upBoxStyle}>-</span>
+                <span className="line" style={upLineStyle}>
+                  -
+                </span>
+                <span className="box" style={upBoxStyle}>
+                  -
+                </span>
               </div>
             </td>
             <td className="tit">
@@ -171,8 +287,12 @@ const Body = () => {
           <tr className="up">
             <td className="bar">
               <div className="down">
-                <span className="line" style={lineStyle}>-</span>
-                <span className="box" style={boxStyle}>-</span>
+                <span className="line" style={lineStyle}>
+                  -
+                </span>
+                <span className="box" style={boxStyle}>
+                  -
+                </span>
               </div>
             </td>
             <td className="tit">
@@ -192,8 +312,12 @@ const Body = () => {
           <tr className="up">
             <td className="bar">
               <div className="up">
-                <span className="line" style={lineStyle}>-</span>
-                <span className="box" style={boxStyle}>-</span>
+                <span className="line" style={lineStyle}>
+                  -
+                </span>
+                <span className="box" style={boxStyle}>
+                  -
+                </span>
               </div>
             </td>
             <td className="tit">
@@ -213,8 +337,12 @@ const Body = () => {
           <tr className="down">
             <td className="bar">
               <div className="down">
-                <span className="line" style={lineStyle}>-</span>
-                <span className="box" style={boxStyle}>-</span>
+                <span className="line" style={lineStyle}>
+                  -
+                </span>
+                <span className="box" style={boxStyle}>
+                  -
+                </span>
               </div>
             </td>
             <td className="tit">
@@ -234,8 +362,12 @@ const Body = () => {
           <tr className="down">
             <td className="bar">
               <div className="down">
-                <span className="line" style={lineStyle}>-</span>
-                <span className="box" style={boxStyle}>-</span>
+                <span className="line" style={lineStyle}>
+                  -
+                </span>
+                <span className="box" style={boxStyle}>
+                  -
+                </span>
               </div>
             </td>
             <td className="tit">
@@ -251,11 +383,11 @@ const Body = () => {
             <td className="tradecost">
               <p className="ready">12,345</p>
             </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
+          </tr> */}
+        </tbody>
+      </table>
+    </div>
   )
 }
 
-export default Body;
+export default Body
