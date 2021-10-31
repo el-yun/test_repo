@@ -16,6 +16,7 @@ module.exports = function (api) {
 
   const plugins = [
     ['@babel/plugin-proposal-class-properties', { loose: true }],
+    ['@babel/plugin-transform-runtime'],
     '@babel/plugin-proposal-numeric-separator',
     'babel-plugin-styled-components',
     !api.env('production') && 'react-refresh/babel',
