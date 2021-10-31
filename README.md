@@ -2,6 +2,22 @@
 
 ## Development Setup
 
+### 해당 repository 가 담고 있는 source code 에 대한 설명
+
+    ├── assets                  # 제공받은 퍼블리싱 결과물 및 스타일
+    ├── docs                    # 제공받은 과제전형 가이드 이미지
+    ├── src                     # 소스 폴더
+    │   ├── api                 # HTTP 통신 관련 소스 - react-query 및 error 처리 등.
+    │   ├── client              # Application Root에 해당하는 컴포넌트 소스
+    │   ├── interfaces          # 해당 소스에서 사용되고있는 타입스크립트 인터페이스를 가지고있는 소스
+    │   ├── store               # redux 관련 소스 
+    │   ├── table               # 과제에서 표시되는 Table 컴포넌트에 관련된 소스
+    │   └── util                # helper 함수가 존재하는 파일
+    │
+    ├── .gitignore              # 커밋제외할 것들에 대한 명세서.
+    ├── ts-config.js            # typescript 관련 설정 파일
+    └── package.json            # 어플리케이션의 패키지에 관한 정보와 의존중인 버전에 관한 정보를 담고있는 파일.
+
 ### Prerequisites
 
 - Install Node.js which includes Node Package Manager (yarn)
