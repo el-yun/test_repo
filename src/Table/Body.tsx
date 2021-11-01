@@ -82,17 +82,61 @@ const Body = (props: Props) => {
     // setList(filterCurrency)
   }
 
+  /**
+   * @description 각 프로퍼티명에 해당하는 정보에 따라 store value에 따른 올림/내림 차순 정렬
+   **/
   const sortTicker = useCallback(
     (ticker: Ticker[], sortType: CurrentSortType, upDown: CurrentSortUpDown) => {
       const propertyName = getPropertyName(sortType)
-      console.log('propertyName :', propertyName)
+
       return ticker.sort((a: Ticker, b: Ticker) => {
-        return upDown === 'up' ? a[propertyName] - b[propertyName] : b[propertyName] - a[propertyName]
+        let aValue: number = 0
+        let bValue: number = 0
+
+        if (propertyName === 'change_rate') {
+          // 초기값이 음수 정수에 대한 표현이 없기때문에 change값이 FALL에 해당할때 음수로 처리하여 sort
+          if (a.change === 'FALL') aValue = a[propertyName] * -1
+          else aValue = a[propertyName]
+
+          if (b.change === 'FALL') bValue = b[propertyName] * -1
+          else bValue = b[propertyName]
+
+          // 값이 동일한 경우 한글 기준으로 오름차순
+          if (aValue === bValue) {
+            return hangleSort(a.market, b.market)
+          } else {
+            return upDown === 'up' ? aValue - bValue : bValue - aValue
+          }
+        } else {
+          if (a[propertyName] === b[propertyName]) {
+            return hangleSort(a.market, b.market)
+          } else {
+            return upDown === 'up' ? a[propertyName] - b[propertyName] : b[propertyName] - a[propertyName]
+          }
+        }
       })
     },
     [tickerData]
   )
 
+  /**
+   * @description 한글이름순 정렬
+   * @param aName
+   * @param bName
+   * @returns
+   */
+  const hangleSort = (aName: string, bName: string) => {
+    let findMarketNameA = marketData.find((item) => item.market === aName)
+    let findMarketNameB = marketData.find((item) => item.market === bName)
+    return findMarketNameA < findMarketNameB ? -1 : findMarketNameA > findMarketNameB ? 1 : 0
+  }
+
+  //
+
+  /**
+   * @description store의 현재가, 전일대비, 거래대금 분류 값과 비교하여 ticker 데이터의 property 명을 찾는다.
+   * @param {CurrentSortType} sortType
+   */
   const getPropertyName = (sortType: CurrentSortType) => {
     //현재가, 전일대비, 거래대금
     //trade_price / change_rate / acc_trade_price_24h
@@ -108,6 +152,9 @@ const Body = (props: Props) => {
     }
   }
 
+  /**
+   * 종목 / sort type / 올림내림 / ticker 가 변경될때 컴포넌트를 리렌더링 한다.
+   */
   const doRendering = useCallback(() => {
     if (tickerData && tickerData.length > 0) {
       const sortTickerList = sortTicker(tickerData, currentSortType, currentSortUpDown)
