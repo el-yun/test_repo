@@ -10,6 +10,7 @@ interface Props {
 const Percent = (props: Props) => {
   const { change_rate, change } = props
 
+  // 백분율 퍼센트로 소수점 올림하여 음수양수 부호 추가하여 표시
   const changeRate = useCallback(
     (rate: number, change: ChangeType) => {
       const sign = getSign(change)

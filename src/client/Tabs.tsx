@@ -9,6 +9,10 @@ const Tabs = (props: Props) => {
   const dispatch = useMarketDispatch()
   const { currency } = useMarketSelector((state) => state.marketStore)
 
+  /**
+   * @description 한글 / 영문 redux dispatch
+   * @param e
+   */
   const handleCurrency = (e: React.MouseEvent<HTMLElement>) => {
     console.log('handleCurrency:', handleCurrency)
     e.preventDefault()

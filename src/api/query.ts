@@ -4,6 +4,10 @@ import FetchError from './FetchError'
 import { Market, Ticker } from '../interfaces/market'
 import { HTTP_STATUS } from '../interfaces/output'
 
+/**
+ * @description 종목 조회
+ * @returns {UseQueryResult<Market[], FetchError>}
+ */
 const useMarkets = () => {
   return useQuery<Market[], FetchError>({
     queryKey: ['all-markets'],
@@ -24,7 +28,12 @@ const useMarkets = () => {
   })
 }
 
-const useTicker = (marketType: String) => {
+/**
+ * @description 현재가 정보 요청
+ * @param {string} marketType
+ * @returns {UseQueryResult<Ticker[], FetchError>}
+ */
+const useTicker = (marketType: string) => {
   return useQuery<Ticker[], FetchError>({
     queryKey: ['ticker', marketType],
     queryFn: async () => {
@@ -46,7 +55,7 @@ const useTicker = (marketType: String) => {
     },
     retry: false,
     enabled: marketType !== '',
-    refetchInterval: 20000,
+    refetchInterval: 1000,
   })
 }
 

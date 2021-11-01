@@ -39,7 +39,7 @@ export type CurrenyType = 'KRW' | 'BTC' | 'USDT' // 원화마켓, BTC마켓, USD
 
 export type CurrentLanguage = 'KO' | 'EN'
 
-export type CurrentSortType = 'price' | 'percent' | 'tradecost'
+export type CurrentSortType = 'price' | 'percent' | 'tradecost' // 현재가, 전일대비, 거래대금
 
 export type CurrentSortUpDown = '' | 'up' | 'down'
 
