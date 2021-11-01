@@ -17,14 +17,6 @@ interface Props {
 const Row = (props: Props) => {
   const { marketInfo, ticker } = props
 
-  // useEffect(() => {
-  //   console.log('marketInfo ', marketInfo.market)
-  // }, [marketInfo])
-
-  // useEffect(() => {
-  //   console.log('ticker ', ticker)
-  // }, [ticker])
-
   // 현재가 trade_price
   // 전일대비 change_rate
   // 거래대금 acc_trade_price_24h
@@ -33,9 +25,16 @@ const Row = (props: Props) => {
     <tr className={getUpDown(ticker)}>
       {ticker && (
         <>
-          <BarChart change={getUpDown(ticker)} />
+          <BarChart
+            change={getUpDown(ticker)}
+            close={ticker.prev_closing_price}
+            open={ticker.opening_price}
+            high={ticker.high_price}
+            low={ticker.low_price}
+            trade={ticker.trade_price}
+          />
           <Title marketInfo={marketInfo} />
-          <Price trade_price={ticker.trade_price} />
+          <Price trade_price={ticker.trade_price} change={ticker.change} />
           <Percent change={ticker.change} change_rate={ticker.change_rate} />
           <TradeCost accTradePrice24h={ticker.acc_trade_price_24h} />
         </>

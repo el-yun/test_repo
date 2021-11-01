@@ -31,19 +31,39 @@ const upBoxStyle: CSS.Properties = {
 
 interface Props {
   change: CurrentSortUpDown
+  close: number
+  open: number
+  high: number
+  low: number
+  trade: number
 }
 
 const BarChart = (props: Props) => {
-  const { change } = props
+  const { change, open, high, low, trade } = props
+
+  const getLineStyle = () => {
+    return {
+      top: '10px',
+      height: '40%',
+    }
+  }
+
+  //height 100 % 12.5px
+  const getBoxStyle = () => {
+    return {
+      top: '12px',
+      height: '4px',
+    }
+  }
 
   return (
     <td className="bar">
       {/* <!-- up down --> */}
       <div className={change}>
-        <span className="line" style={lineStyle}>
+        <span className="line" style={getLineStyle()}>
           -
         </span>
-        <span className="box" style={boxStyle}>
+        <span className="box" style={getBoxStyle()}>
           -
         </span>
       </div>
