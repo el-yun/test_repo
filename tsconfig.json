@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "removeComments": true,
+    "downlevelIteration": true,
+    "sourceMap": true,
+    "baseUrl": "src",
+		"paths": {
+			"~/*": ["*"],
+		}
+  },
+  "include": [
+    "src"
+  ],
+  "compileOnSave": true,
+  "buildOnSave": true
+}
