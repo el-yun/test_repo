@@ -13,21 +13,25 @@ interface Props {
 }
 
 const CandleChart = (props: Props) => {
-  const percent = 30
+  // const percent = 30
+  const percent = 10 // 사이트나 앱에선 30% -30% 기준인듯 하다.. 과제문서 에서는 10% -10% 요청.
+  const half = 12.5 // 차트에서 반을 표시 할수 있는 값 25px / 2
+  const hundred = 100
+
   const { change, updown, close, open, high, low, trade, market } = props
 
   const getLineStyle = () => {
     // 고가 저가
-    // 전일 기준 30 퍼센트 를 더한 값
-    let maximum = close + close * (percent / 100) // 상한퍼센트 더한값
-    let minimum = close - close * (percent / 100) // 하한퍼센트 더한값
+    // 전일 기준 퍼센트 를 더한 값
+    let maximum = close + close * (percent / hundred) // 상한퍼센트 더한값
+    let minimum = close - close * (percent / hundred) // 하한퍼센트 더한값
 
-    let upPercent = ((high - close) * 100) / (maximum - close) //
-    let downPercent = ((close - low) * 100) / (close - minimum)
+    let upPercent = ((high - close) * hundred) / (maximum - close) //
+    let downPercent = ((close - low) * hundred) / (close - minimum)
 
-    let heightPx = (12.5 * upPercent) / 100
-    let topPx = 12.5 - heightPx
-    let downPx = (12.5 * downPercent) / 100
+    let heightPx = (half * upPercent) / hundred
+    let topPx = half - heightPx
+    let downPx = (half * downPercent) / hundred
 
     // console.log('@@@market :', market, ' topPx :', topPx)
     // console.log('@@@market :', market, ' heightPx :', heightPx)
@@ -42,7 +46,7 @@ const CandleChart = (props: Props) => {
     // RISE - 상 종 하 시
     // FALL = 상 시 하 종
     let heightPx = 1
-    let topPx = 12.5
+    let topPx = half
     let upPercent = 0
     let downPercent = 0
     let middle = 0
@@ -50,29 +54,29 @@ const CandleChart = (props: Props) => {
     if (change !== 'EVEN') {
       // 고가 저가
       // 전일 기준 30 퍼센트 를 더한 값
-      let maximum = close + close * (percent / 100) // 상한
-      let minimum = close - close * (percent / 100) // 하한
+      let maximum = close + close * (percent / hundred) // 상한
+      let minimum = close - close * (percent / hundred) // 하한
 
       // 종가 - 시가
       if (change === 'RISE') {
         // 전일종가의 상한퍼센트만큼에서 전일종가를 뺀후 종가-시가 *100 으로 나눠준다.
-        upPercent = ((trade - close) * 100) / (maximum - close)
-        downPercent = ((close - open) * 100) / (close - minimum)
+        upPercent = ((trade - close) * hundred) / (maximum - close)
+        downPercent = ((close - open) * hundred) / (close - minimum)
       } else {
         middle = open - trade // 시가 - 종가
         // 전일종가의 상한퍼센트만큼에서 전일종가를 뺀후 종가-시가 *100 으로 나눠준다.
-        upPercent = ((open - close) * 100) / (maximum - close)
-        downPercent = ((close - trade) * 100) / (close - minimum)
+        upPercent = ((open - close) * hundred) / (maximum - close)
+        downPercent = ((close - trade) * hundred) / (close - minimum)
       }
 
-      heightPx = (12.5 * upPercent) / 100
-      topPx = 12.5 - heightPx
-      downPx = (12.5 * downPercent) / 100
+      heightPx = (half * upPercent) / hundred
+      topPx = half - heightPx
+      downPx = (half * downPercent) / hundred
     }
 
     return {
       top: topPx,
-      height: heightPx + downPx > 1 ? heightPx + downPx : 1,
+      height: heightPx + downPx > 1 ? heightPx + downPx : 1, // 1보다 작을 때는 1px로 표시
     }
   }
 
