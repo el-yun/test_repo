@@ -43,6 +43,12 @@
     # current directory: $PROJECT_ROOT
     $ yarn start
     ```
+4. Test
+
+    ```bash
+    # current directory: $PROJECT_ROOT
+    $ yarn test
+    ```
 
 ## Requirement
 - assets 폴더를 참고하여 markup 연동합니다
