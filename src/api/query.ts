@@ -55,7 +55,7 @@ const useTicker = (marketType: string) => {
     },
     retry: false,
     enabled: marketType !== '',
-    refetchInterval: 1000,
+    refetchInterval: 5000,
   })
 }
 
