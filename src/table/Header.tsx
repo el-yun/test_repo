@@ -21,11 +21,9 @@ const Header = () => {
     (e: React.MouseEvent<HTMLElement>) => {
       e.preventDefault()
       const selected = e.currentTarget.getAttribute('data-title') as CurrentSortType
-      console.log('selected :', selected)
       if (selected === currentSortType) {
         if (currentSortUpDown === 'down') dispatch(setChangeSortUpDown('up'))
         else if (currentSortUpDown === 'up') dispatch(setChangeSortUpDown('down'))
-        // else dispatch(setChangeSortUpDown('down'))
       } else {
         dispatch(setCurrentSortType(selected))
       }
@@ -58,7 +56,6 @@ const Header = () => {
               {currentLangType()}
             </a>
           </th>
-          {/* <!-- className: up, down --> */}
           <th className="sortable price" data-title="price" onClick={handleClick}>
             <a href="#" className={isCurrentUse('price')}>
               현재가

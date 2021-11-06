@@ -26,22 +26,23 @@ const CandleChart = (props: Props) => {
     let maximum = close + close * (percent / hundred) // 상한퍼센트 더한값
     let minimum = close - close * (percent / hundred) // 하한퍼센트 더한값
 
-    let upPercent = ((high - close) * hundred) / (maximum - close) //
+    // 전일종가의 상한퍼센트만큼에서 전일종가를 뺀후 고가-저가 * 100 으로 나눠준다.
+    let upPercent = ((high - close) * hundred) / (maximum - close)
+
+    // 전일종가에서 전일종가의 하한퍼센트만큼에서 값을 뺀후 고가-저가 * 100 으로 나눠준다.
     let downPercent = ((close - low) * hundred) / (close - minimum)
 
+    // 차트 반값 max(12.5) 만큼 백분율 기준 픽셀을 구하여 적용.
     let heightPx = (half * upPercent) / hundred
     let topPx = half - heightPx
     let downPx = (half * downPercent) / hundred
 
-    // console.log('@@@market :', market, ' topPx :', topPx)
-    // console.log('@@@market :', market, ' heightPx :', heightPx)
     return {
       top: topPx,
       height: heightPx + downPx,
     }
   }
 
-  //height 100 % 12.5px
   const getBoxStyle = () => {
     // RISE - 상 종 하 시
     // FALL = 상 시 하 종
@@ -53,7 +54,7 @@ const CandleChart = (props: Props) => {
     let downPx = 0
     if (change !== 'EVEN') {
       // 고가 저가
-      // 전일 기준 30 퍼센트 를 더한 값
+      // 전일 기준 상수 퍼센트 를 더한 값
       let maximum = close + close * (percent / hundred) // 상한
       let minimum = close - close * (percent / hundred) // 하한
 

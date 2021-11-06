@@ -1,4 +1,4 @@
-import { getSign, getUpDown, numberWithCommas, renameMarket } from '../src/util/util'
+import { getPropertyName, getSign, getUpDown, numberWithCommas, renameMarket } from '../src/util/util'
 
 describe('util', () => {
   describe('function', () => {
@@ -99,6 +99,24 @@ describe('util', () => {
     it('API 에서 보합일 경우 빈 문자를 리턴한다.', () => {
       const minus = getSign('EVEN')
       expect(minus).toEqual('')
+    })
+
+    it('redux store의 현재가에 해당하는 ticker 데이터의 property 명을 찾는다.', () => {
+      const checkPrice = getPropertyName('price')
+      expect(checkPrice).toEqual('trade_price')
+    })
+    it('redux store의 전일대비에 해당하는 ticker 데이터의 property 명을 찾는다.', () => {
+      const checkRate = getPropertyName('percent')
+      expect(checkRate).toEqual('change_rate')
+    })
+    it('redux store의 거래대금에 해당하는 ticker 데이터의 property 명을 찾는다.', () => {
+      const check24H = getPropertyName('tradecost')
+      expect(check24H).toEqual('acc_trade_price_24h')
+    })
+
+    it('redux store의 해당하지 않을 경우 intial data인 거래대금 프로퍼티를 리턴한다.', () => {
+      const checkEmpty = getPropertyName('trade_price')
+      expect(checkEmpty).toEqual('trade_price')
     })
   })
 })

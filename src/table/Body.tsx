@@ -2,36 +2,33 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useMarkets, useTicker } from '~/api/query'
 import { CurrentSortType, CurrentSortUpDown, Market, Ticker } from '~/interfaces/market'
 import { useMarketSelector } from '~/store/useMarketStore'
+import { getPropertyName } from '~/util/util'
 import Row from './row/Row'
 
-interface Props {}
-
-const Body = (props: Props) => {
-  const [searchKey, setSearchKey] = useState('')
+const Body = () => {
+  const [selectMarket, setSelectMarket] = useState('')
   const { currency, currentSortType, currentSortUpDown } = useMarketSelector((state) => state.marketStore)
   const { error: fetchMarketError, data: marketData } = useMarkets()
-
-  const { error: fetchTickerError, data: tickerData, refetch: fireFetchTicker } = useTicker(searchKey)
+  const { error: fetchTickerError, data: tickerData, refetch: fireFetchTicker } = useTicker(selectMarket)
 
   useEffect(() => {
     if (currency && marketData && marketData.length > 0) selectFilterCurrency(marketData)
   }, [currency, marketData])
 
+  // 원화마켓, BTC마켓, USDT 마켓 선택시 해당하는 마켓 정보 API 요청
   useEffect(() => {
-    if (searchKey.length > 0) fireFetchTicker()
-  }, [searchKey])
+    if (selectMarket.length > 0) fireFetchTicker()
+  }, [selectMarket])
 
+  // 정렬 타입 state가 변경되면 재렌더링한다.
   useEffect(() => {
     if (tickerData) doRendering()
   }, [currentSortType])
 
+  // 내림/올림 순 state가 변경되면 재렌더링한다.
   useEffect(() => {
     if (tickerData) doRendering()
   }, [currentSortUpDown])
-
-  // useEffect(() =>{
-  //   console.log('fetchTickerError :', fetchTickerError);
-  // })
 
   /**
    * @description 코인 종목 탭 클릭시 해당하는 종목으로 목록 filter
@@ -44,13 +41,7 @@ const Body = (props: Props) => {
       return split[0] === currency
     })
 
-    console.log('filterCurrency:', filterCurrency)
-    // console.log('ticker :', tickerData)
-
-    const str = filterCurrency.map((item) => item.market).join(', ')
-    console.log('set Search key :', str)
-    setSearchKey(str)
-    // setList(filterCurrency)
+    setSelectMarket(filterCurrency.map((item) => item.market).join(', '))
   }
 
   /**
@@ -65,25 +56,20 @@ const Body = (props: Props) => {
         let bValue: number = 0
 
         if (propertyName === 'change_rate') {
-          // 초기값이 음수 정수에 대한 표현이 없기때문에 change값이 FALL에 해당할때 음수로 처리하여 sort
+          // 1. 초기값이 음수 정수에 대한 표현이 없기때문에 change값이 FALL에 해당할때 음수로 처리하여 sort
           if (a.change === 'FALL') aValue = a[propertyName] * -1
           else aValue = a[propertyName]
 
           if (b.change === 'FALL') bValue = b[propertyName] * -1
           else bValue = b[propertyName]
 
-          // 값이 동일한 경우 한글 기준으로 오름차순
-          if (aValue === bValue) {
-            return hangleSort(a.market, b.market)
-          } else {
-            return upDown === 'up' ? aValue - bValue : bValue - aValue
-          }
+          // 1-1. 값이 동일한 경우 한글 기준으로 오름차순
+          if (aValue === bValue) return hangleSort(a.market, b.market)
+          else return upDown === 'up' ? aValue - bValue : bValue - aValue
         } else {
-          if (a[propertyName] === b[propertyName]) {
-            return hangleSort(a.market, b.market)
-          } else {
-            return upDown === 'up' ? a[propertyName] - b[propertyName] : b[propertyName] - a[propertyName]
-          }
+          // 그외 동일한 경우 한글순으로 그외는 올림내림차순 정렬
+          if (a[propertyName] === b[propertyName]) return hangleSort(a.market, b.market)
+          else return upDown === 'up' ? a[propertyName] - b[propertyName] : b[propertyName] - a[propertyName]
         }
       })
     },
@@ -94,33 +80,11 @@ const Body = (props: Props) => {
    * @description 한글이름순 정렬
    * @param aName
    * @param bName
-   * @returns
    */
   const hangleSort = (aName: string, bName: string) => {
     let findMarketNameA = marketData.find((item) => item.market === aName)
     let findMarketNameB = marketData.find((item) => item.market === bName)
     return findMarketNameA < findMarketNameB ? -1 : findMarketNameA > findMarketNameB ? 1 : 0
-  }
-
-  //
-
-  /**
-   * @description store의 현재가, 전일대비, 거래대금 분류 값과 비교하여 ticker 데이터의 property 명을 찾는다.
-   * @param {CurrentSortType} sortType
-   */
-  const getPropertyName = (sortType: CurrentSortType) => {
-    //현재가, 전일대비, 거래대금
-    //trade_price / change_rate / acc_trade_price_24h
-    switch (sortType) {
-      case 'price':
-        return 'trade_price'
-      case 'percent':
-        return 'change_rate'
-      case 'tradecost':
-        return 'acc_trade_price_24h'
-      default:
-        return 'trade_price'
-    }
   }
 
   /**

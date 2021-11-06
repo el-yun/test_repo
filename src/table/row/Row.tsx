@@ -20,25 +20,21 @@ const Row = (props: Props) => {
   const dispatch = useMarketDispatch()
   const { marketInfo, ticker } = props
 
-  const handleClick = () => {
-    dispatch(setSelectRow(ticker.market))
-  }
+  const handleClick = () => dispatch(setSelectRow(ticker.market))
 
   useEffect(() => {
-    if (ticker.market === selectRow) {
-      if (trRef && trRef.current) trRef.current.className = isClassName()
+    if (ticker.market === selectRow && trRef && trRef.current) {
+      trRef.current.className = isClassName()
     }
   }, [selectRow])
 
+  // 선택 Row 클래스 처리
   const isClassName = () => {
     let className = ''
     className = getUpDown(ticker)
     if (selectRow === ticker.market) className += ' on'
     return className
   }
-  // 현재가 trade_price
-  // 전일대비 change_rate
-  // 거래대금 acc_trade_price_24h
 
   return (
     <tr ref={trRef} className={isClassName()} onClick={handleClick}>
