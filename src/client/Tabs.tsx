@@ -14,7 +14,7 @@ const Tabs = () => {
   const handleCurrency = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
     const selected = e.currentTarget.getAttribute('data-title') as CurrenyType
-    dispatch(setCurrencyType(selected))
+    if (selected !== currency) dispatch(setCurrencyType(selected))
   }
 
   return (

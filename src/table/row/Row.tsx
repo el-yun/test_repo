@@ -20,7 +20,9 @@ const Row = (props: Props) => {
   const dispatch = useMarketDispatch()
   const { marketInfo, ticker } = props
 
-  const handleClick = () => dispatch(setSelectRow(ticker.market))
+  const handleClick = () => {
+    if (selectRow !== ticker.market) dispatch(setSelectRow(ticker.market))
+  }
 
   useEffect(() => {
     if (ticker.market === selectRow && trRef && trRef.current) {
